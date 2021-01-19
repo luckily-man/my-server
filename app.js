@@ -12,6 +12,7 @@ app.use(bodyParser())
 
 // 引入user.js
 const users = require('./routes/api/user')
+const profile = require('./routes/api/profile')
 
 // 路由
 router.get('/', async ctx => {
@@ -35,8 +36,12 @@ mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
 app.use(passport.initialize())
 app.use(passport.session())
 
+// 回调到config文件中
+require('./config/passport')(passport)
+
 // 配置路由地址localhost:3000/api/users
 router.use('/api/users', users)
+router.use('/api/profile', profile)
 
 // 配置路由
 app.use(router.routes()).use(router.allowedMethods())

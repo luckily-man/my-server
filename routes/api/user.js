@@ -4,9 +4,14 @@ const bcrypt = require('bcryptjs')
 const gravatar = require('gravatar')
 const jwt = require('jsonwebtoken')
 const keys = require('../../config/key')
+const passport = require('koa-passport')
 
 // 引入User
 const User = require('../../models/User')
+
+// 引入验证
+const validatorRegisterInput = require('../../validation/register')
+const validatorLoginInput = require('../../validation/login')
 
 /*
 *@router GET  api/users/test
@@ -30,6 +35,14 @@ router.get('/test', async ctx => {
 
 router.post('/register', async ctx => {
   // console.log(ctx.request.body);
+  const { errors, isValid } = validatorRegisterInput(ctx.request.body)
+
+  // 判断是否验证通过
+  if(!isValid) {
+    ctx.status = 400;
+    ctx.body = errors;
+    return;
+  }
 
   // 存储到数据库
   const findResult = await User.find({email: ctx.request.body.email})
@@ -74,6 +87,15 @@ router.post('/register', async ctx => {
 */
 
 router.post('/login', async ctx => {
+  const { errors, isValid } = validatorLoginInput(ctx.request.body)
+
+  // 判断是否验证通过
+  if(!isValid) {
+    ctx.status = 400;
+    ctx.body = errors;
+    return;
+  }
+
   // 查询
   const findResult =  await User.find({email: ctx.request.body.email});
   const user = findResult[0]
@@ -110,8 +132,13 @@ router.post('/login', async ctx => {
 @access  接口是私密的
 */
 
-router.get('/current', 'token验证', async ctx => {
-  ctx.body = {success: true}
+router.get('/current', passport.authenticate('jwt', { session: false }), async ctx => {
+  ctx.body = {
+    id: ctx.state.user.id,
+    name: ctx.state.user.name,
+    email: ctx.state.user.email,
+    avatar: ctx.state.user.avatar
+  }
 })
 
 module.exports = router.routes()
