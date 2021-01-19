@@ -47,9 +47,10 @@ router.post('/register', async ctx => {
   // 存储到数据库
   const findResult = await User.find({email: ctx.request.body.email})
   if(findResult.length > 0) {
-    ctx.status = 500;
+    
     ctx.body = {
-      email: '邮箱已被占用'
+      msg: '邮箱已被占用',
+      status: 500
     }
   } else {
     const avatar = gravatar.url(ctx.request.body.email, {s: '200', r: 'pg', d: 'mm'})
@@ -66,17 +67,19 @@ router.post('/register', async ctx => {
     // console.log(hash);
     newUser.password = hash
 
-
     // 存储到数据库
-    await newUser.save().then(user => {
-      // console.log('111');
-      ctx.body = user
+    await newUser.save()
+    .then(user => {
+      // console.log(user);
+      ctx.body = {
+        status: 200,
+        user
+      }
     }).catch(err => {
       console.log(err);
     })
+    // console.log(sss);
 
-    // 返回json数据
-    ctx.body = newUser
   }
 })
 
