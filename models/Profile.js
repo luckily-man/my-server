@@ -103,7 +103,7 @@ const ProfileSchema = new Schema({
     wechat: {
       type: String
     },
-    QQ: {
+    qq: {
       type: String
     },
     tengxunkt: {

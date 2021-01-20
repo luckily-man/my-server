@@ -41,8 +41,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), async ctx => {
     ctx.status = 200;
     ctx.body = profile;
   } else {
-    ctx.status = 404
-    ctx.body = {noprofile: '该用户没有任何相关的个人信息'}
+    ctx.body = {status: 404, msg: '该用户没有任何相关的个人信息'}
     return;
   }
 })
@@ -83,7 +82,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), async ctx => 
   profileFields.social = {}
 
   if( ctx.request.body.wechat) profileFields.social.wechat = ctx.request.body.wechat
-  if( ctx.request.body.QQ) profileFields.social.QQ = ctx.request.body.QQ
+  if( ctx.request.body.qq) profileFields.social.qq = ctx.request.body.qq
   if( ctx.request.body.tengxunkt) profileFields.social.tengxunkt = ctx.request.body.tengxunkt
   if( ctx.request.body.wangyikt) profileFields.social.wangyikt = ctx.request.body.wangyikt
 

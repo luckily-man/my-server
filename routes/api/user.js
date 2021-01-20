@@ -105,8 +105,8 @@ router.post('/login', async ctx => {
   const password = ctx.request.body.password
   // 判断查没查到
   if(findResult.length == 0) {
-    ctx.status = 404,
-    ctx.body = { email: '用户不存在!'} 
+    
+    ctx.body = { msg: '用户不存在!',status: 404,} 
   } else {
     // 查到后验证密码
     const result = bcrypt.compareSync(password, user.password); // true
@@ -119,12 +119,10 @@ router.post('/login', async ctx => {
         avatar: user.avatar
       }
       const token = jwt.sign(payload, keys.secretOrKey, {expiresIn: 3600})
-
-      ctx.status = 200,
-      ctx.body = {success: true, token: "Bearer " + token}
+      
+      ctx.body = {status: 200, success: true, token: "Bearer " + token}
     }else{
-      ctx.status = 400,
-      ctx.body = {password: '密码错误'}
+      ctx.body = {msg: '密码错误', status: 400,}
     }
   }
 })
