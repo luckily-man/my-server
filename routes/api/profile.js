@@ -162,7 +162,7 @@ router.get('/all', async ctx => {
 })
 
 /*
-*@router GET  api/profile/experience
+*@router POST  api/profile/experience
 @desc 工作经验接口地址
 @access  接口是私有的
 */
@@ -213,6 +213,44 @@ router.post('/experience', passport.authenticate('jwt', { session: false }), asy
 })
 
 /*
+*@router PUT  api/profile/expOne?exp_id=.......
+@desc 编辑某一条工作经验信息接口地址
+@access  接口是私有的
+*/
+
+router.put('/expOne', passport.authenticate('jwt', { session: false }), async ctx => {
+
+  const exp_id = ctx.query.exp_id
+  // console.log(exp_id);
+
+  const profile = await Profile.find({user: ctx.state.user.id})
+  if(profile[0].experience.length > 0) {
+    const removeIndex = profile[0].experience.map(item => item.id).indexOf(exp_id)
+    const newExp = {
+      title: ctx.request.body.title,
+      current: ctx.request.body.current,
+      company: ctx.request.body.company,
+      location: ctx.request.body.location,
+      from: ctx.request.body.from,
+      to: ctx.request.body.to,
+      description: ctx.request.body.description,
+    }
+    profile[0].experience[removeIndex] = newExp
+    const profileUpdate = await Profile.findOneAndUpdate(
+      {user: ctx.state.user.id},
+      {$set: profile[0]},
+      {new: true}
+    )
+    ctx.body = profileUpdate
+  } else {
+    ctx.body = {
+      msg: '没有任何数据',
+      status: 404
+    }
+  }
+})
+
+/*
 *@router POST api/profile/education
 @desc 教育接口地址
 @access  接口是私有的
@@ -257,9 +295,46 @@ router.post('/education', passport.authenticate('jwt', { session: false }), asyn
       }
     }
   } else {
-    errors.noprofile = '没有该用户信息'
-    ctx.status = 404
-    ctx.body = errors
+    
+    ctx.body = {msg: '没有该用户信息', status: 404}
+  }
+})
+
+/*
+*@router PUT  api/profile/eduOne?edu_id=....
+@desc 编辑某一条教育经历信息接口地址
+@access  接口是私有的
+*/
+
+router.put('/eduOne', passport.authenticate('jwt', { session: false }), async ctx => {
+
+  const edu_id = ctx.query.edu_id
+  // console.log(exp_id);
+
+  const profile = await Profile.find({user: ctx.state.user.id})
+  if(profile[0].education.length > 0) {
+    const removeIndex = profile[0].education.map(item => item.id).indexOf(edu_id)
+    const newEdu = {
+      school: ctx.request.body.school,
+      current: ctx.request.body.current,
+      degree: ctx.request.body.degree,
+      fieldofstudy: ctx.request.body.fieldofstudy,
+      from: ctx.request.body.from,
+      to: ctx.request.body.to,
+      description: ctx.request.body.description,
+    }
+    profile[0].education[removeIndex] = newEdu
+    const profileUpdate = await Profile.findOneAndUpdate(
+      {user: ctx.state.user.id},
+      {$set: profile[0]},
+      {new: true}
+    )
+    ctx.body = profileUpdate
+  } else {
+    ctx.body = {
+      msg: '没有任何数据',
+      status: 404
+    }
   }
 })
 
@@ -268,7 +343,7 @@ router.post('/education', passport.authenticate('jwt', { session: false }), asyn
 @desc 删除工作经验接口地址
 @access  接口是私有的
 */
-router.delete('/experience', passport.authenticate('jwt', { session: false }), async ctx => {
+router.delete('/experience:id', passport.authenticate('jwt', { session: false }), async ctx => {
   // 拿到id
   const exp_id = ctx.query.exp_id
   // console.log(exp_id);
@@ -295,7 +370,7 @@ router.delete('/experience', passport.authenticate('jwt', { session: false }), a
 
 /*
 *@router DELETE  api/profile/education?edu_id=......
-@desc 删除工作经验接口地址
+@desc 删除教育经历接口地址
 @access  接口是私有的
 */
 router.delete('/education', passport.authenticate('jwt', { session: false }), async ctx => {
@@ -317,8 +392,7 @@ router.delete('/education', passport.authenticate('jwt', { session: false }), as
     )
     ctx.body = profileUpdate
   }else {
-    ctx.status = 404
-    ctx.body = {errors: '没有任何数据'}
+    ctx.body = {msg: '没有任何数据', status: 404}
   }
  
 })
@@ -335,12 +409,10 @@ router.delete('/', passport.authenticate('jwt', { session: false }), async ctx =
   if(profile.ok == 1) {
     const user = await User.deleteOne({_id: ctx.state.user.id})
     if(user.ok == 1) {
-      ctx.status = 200
-      ctx.body = {success: '用户已删除'}
+      ctx.body = {success: '用户已删除', status: 200}
     }
   } else {
-    ctx.status = 404
-    ctx.body = {error: 'profile不存在'}
+    ctx.body = {msg: '用户数据不存在', status: 404}
   }
 })
 
