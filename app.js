@@ -61,15 +61,3 @@ app.listen(port, () => {
   console.log(`server started on ${port}`);
 })
 
-// let bbb = {
-//   name: '李四',
-//   email: 'test335@test.com',
-//   password: '123456',
-//   password2: '123456'
-// }
-// axios.post('http://localhost:3000/api/users/register', bbb).then((res) => {
-//   console.log(res.data);
-// }).catch(err => {
-//   // console.log(111);
-//   console.log(err);
-// })

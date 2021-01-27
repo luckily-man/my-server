@@ -221,7 +221,6 @@ router.post('/experience', passport.authenticate('jwt', { session: false }), asy
 router.put('/expOne', passport.authenticate('jwt', { session: false }), async ctx => {
 
   const exp_id = ctx.query.exp_id
-  // console.log(exp_id);
 
   const profile = await Profile.find({user: ctx.state.user.id})
   if(profile[0].experience.length > 0) {

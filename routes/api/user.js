@@ -142,4 +142,66 @@ router.get('/current', passport.authenticate('jwt', { session: false }), async c
   }
 })
 
+/*
+*@router GET  api/users/all
+@desc 查询所有user信息 返回用户信息
+@access  接口是私密的
+*/
+router.get('/all', async ctx => {
+  const findResult = await User.find()
+  if(findResult.length == 0) {
+    ctx.body = {
+      status: 404,
+      msg: '没有任何用户信息'
+    }
+  } else {
+    ctx.body = {
+      status: 200,
+      msg: '查询成功',
+      data: findResult
+    }
+  }
+})
+
+
+/*
+*@router POST  api/users/person?uuid=....
+@desc 查询所有user信息 返回用户信息
+@access  接口是私密的
+*/
+router.post('/person', async ctx => {
+  const uuid = ctx.query.uuid
+  const profile = await User.find({_id: uuid})
+  // console.log(profile[0]);
+  if(profile.length == 0) {
+    ctx.body = {
+      status: 500,
+      msg: '未知错误'
+    }
+  } else {
+    const avatar = gravatar.url(ctx.request.body.email, {s: '200', r: 'pg', d: 'mm'})
+    const newUser = {
+      name: ctx.request.body.name,
+      email: ctx.request.body.email,
+      avatar,
+      permission: ctx.request.body.permission
+    };
+    // console.log(newUser.name);
+    profile[0].name = newUser.name
+    profile[0].email = newUser.email
+    profile[0].avatar = newUser.avatar
+    profile[0].permission = newUser.permission
+    const userUpdate = await User.findOneAndUpdate(
+      {_id: uuid},
+      {$set: profile[0]},
+      {new: true}
+    )
+    ctx.body = {
+      status: 200,
+      msg: '修改成功',
+      data: userUpdate
+    }
+  }
+})
+
 module.exports = router.routes()
