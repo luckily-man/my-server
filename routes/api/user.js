@@ -166,7 +166,7 @@ router.get('/all', async ctx => {
 
 /*
 *@router POST  api/users/person?uuid=....
-@desc 查询所有user信息 返回用户信息
+@desc 修改user信息 返回用户信息
 @access  接口是私密的
 */
 router.post('/person', async ctx => {

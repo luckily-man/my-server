@@ -20,6 +20,7 @@ app.use(bodyParser())
 // 引入user.js
 const users = require('./routes/api/user')
 const profile = require('./routes/api/profile')
+const userapp = require('./routes/api/userapp')
 
 // 路由
 router.get('/', async ctx => {
@@ -51,6 +52,7 @@ require('./config/passport')(passport)
 // 配置路由地址localhost:3000/api/users
 router.use('/api/users', users)
 router.use('/api/profile', profile)
+router.use('/api/userapp', userapp)
 
 // 配置路由
 app.use(router.routes()).use(router.allowedMethods())
