@@ -5,10 +5,8 @@ const gravatar = require('gravatar')
 const jwt = require('jsonwebtoken')
 const keys = require('../../config/key')
 const passport = require('koa-passport')
-
 // 引入Userapp
 const UserApp = require('../../models/UserApp')
-
 // 引入验证
 const validatorRegisterInput = require('../../validation/registerApp')
 const validatorLoginInput = require('../../validation/loginapp')
@@ -74,14 +72,12 @@ router.post('/register', async ctx => {
 
 router.post('/login', async ctx => {
   const { errors, isValid } = validatorLoginInput(ctx.request.body)
-
   // 判断是否验证通过
   if(!isValid) {
     ctx.status = 400;
     ctx.body = errors;
     return;
   }
-
   // 查询
   const findResult =  await UserApp.find({stuId: ctx.request.body.stuId});
   const user = findResult[0]
@@ -114,9 +110,7 @@ router.post('/login', async ctx => {
 @access  接口是私密的
 */
 router.post('/edit', async ctx => {
-
   const { errors, isValid } = validatorEditPwdInput(ctx.request.body)
-
   // 判断是否验证通过
   if(!isValid) {
     ctx.status = 400;
@@ -155,4 +149,36 @@ router.post('/edit', async ctx => {
   }
 })
 
+/*
+*@router GET  api/userapp/current
+@desc 用户信息接口地址 返回用户信息
+@access  接口是私密的
+*/
+
+router.get('/current', passport.authenticate('jwt', { session: false }), async ctx => {
+  console.log('111');
+  ctx.body = {
+    stuId: ctx.state.user.stuId,
+    name: ctx.state.user.name,
+    email: ctx.state.user.email,
+    avatar: ctx.state.user.avatar
+  }
+})
+
+router.get('/all', async ctx => {
+  console.log('111');
+  const findResult = await UserApp.find()
+  if(findResult.length == 0) {
+    ctx.body = {
+      status: 404,
+      msg: '没有任何用户信息'
+    }
+  } else {
+    ctx.body = {
+      status: 200,
+      msg: '查询成功',
+      data: findResult
+    }
+  }
+})
 module.exports = router.routes()
