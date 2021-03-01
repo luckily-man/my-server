@@ -7,32 +7,25 @@ opts.secretOrKey = keys.secretOrKey;
 const mongoose = require('mongoose')
 const User = mongoose.model('users')
 const UserApp = mongoose.model('userapp')
+const Teacher = mongoose.model('teacher')
 module.exports = passport => {
   // console.log(passport);
   passport.use(new JwtStrategy(opts, async function(jwt_payload, done) {
-    // console.log(jwt_payload);
-    // const user = await User.findById(jwt_payload.id)
-    // if(user) {
-    //   return done(null, user)
-    // } else {
-    //   return done(null, false)
-    // }
+    const users = await User.findById(jwt_payload.id)
+    const teacher = await Teacher.findById(jwt_payload.id)
     const user = await UserApp.findById(jwt_payload.id)
-    if(user) {
+    // console.log(teaclass);
+    
+    if(users){
+      return done(null, users)
+    }else if(teacher) {
+      return done(null, teacher)
+    } else if(user){
       return done(null, user)
     } else {
       return done(null, false)
     }
-    // User.findOne({id: jwt_payload.sub}, function(err, user) {
-    //     if (err) {
-    //         return done(err, false);
-    //     }
-    //     if (user) {
-    //         return done(null, user);
-    //     } else {
-    //         return done(null, false);
-    //         // or you could create a new account
-    //     }
-    // });
 }));
 }
+
+

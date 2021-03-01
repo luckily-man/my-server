@@ -21,6 +21,13 @@ app.use(bodyParser())
 const users = require('./routes/api/user')
 const profile = require('./routes/api/profile')
 const userapp = require('./routes/api/userapp')
+const notice = require('./routes/api/notice')
+const mclass = require('./routes/api/class')
+const illness = require('./routes/api/illness')
+const allcls = require('./routes/api/allcls')
+const teacher = require('./routes/api/teacher')
+const teaclass = require('./routes/api/teaclass')
+const student = require('./routes/api/student')
 
 // 路由
 router.get('/', async ctx => {
@@ -49,10 +56,18 @@ app.use(passport.session())
 // 回调到config文件中
 require('./config/passport')(passport)
 
-// 配置路由地址localhost:3000/api/users
+// 配置路由地址localhost:3000/api/***
 router.use('/api/users', users)
 router.use('/api/profile', profile)
 router.use('/api/userapp', userapp)
+router.use('/api/notice', notice)
+router.use('/api/class', mclass)
+router.use('/api/illness', illness)
+router.use('/api/allcls', allcls)
+router.use('/api/teacher', teacher)
+router.use('/api/teaclass', teaclass)
+router.use('/api/student', student)
+
 
 // 配置路由
 app.use(router.routes()).use(router.allowedMethods())

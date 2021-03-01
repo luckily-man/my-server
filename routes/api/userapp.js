@@ -96,7 +96,7 @@ router.post('/login', async ctx => {
         name: user.name,
         avatar: user.avatar
       }
-      const token = jwt.sign(payload, keys.secretOrKey, {expiresIn: 86400})
+      const token = jwt.sign(payload, keys.secretOrKey, {expiresIn: 864000})
       ctx.body = {status: 200, permission: user.permission, success: true, token: "Bearer " + token}
     }else{
       ctx.body = {msg: '密码错误!', status: 400,}
@@ -156,7 +156,7 @@ router.post('/edit', async ctx => {
 */
 
 router.get('/current', passport.authenticate('jwt', { session: false }), async ctx => {
-  console.log('111');
+  
   ctx.body = {
     stuId: ctx.state.user.stuId,
     name: ctx.state.user.name,
@@ -166,7 +166,7 @@ router.get('/current', passport.authenticate('jwt', { session: false }), async c
 })
 
 router.get('/all', async ctx => {
-  console.log('111');
+
   const findResult = await UserApp.find()
   if(findResult.length == 0) {
     ctx.body = {
