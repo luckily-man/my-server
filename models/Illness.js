@@ -31,6 +31,14 @@ const IllnessSchema = new Schema({
     type: Date,
     default: Date.now
   },
+  status: {
+    type: String,
+    default: 'false'
+  },
+  boss:{
+    type:String,
+    required: true
+  }
 })
 
 module.exports = Illness = mongoose.model('illness', IllnessSchema)

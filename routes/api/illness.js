@@ -21,7 +21,7 @@ router.get('/test', async ctx => {
 
 /*
 *@router POST  api/illness/add
-@desc 添加通知接口
+@desc 请假接口
 @access  接口是公开的
 */
 router.post('/add', async ctx => {
@@ -32,6 +32,7 @@ router.post('/add', async ctx => {
     beginDate: ctx.request.body.beginDate,
     endDate: ctx.request.body.endDate,
     reason: ctx.request.body.reason,
+    boss: ctx.request.body.boss,
   })
   await newIllness.save().then(res => {
     ctx.body = {
@@ -76,11 +77,8 @@ router.get('/all', async ctx => {
 router.post('/seleOne', async ctx => {
   const findResult = await Illness.find()
   const stuId = ctx.request.body.stuId
-  // console.log(findResult);
-  // console.log(stuId);
   let result = findResult.filter(item=> {
     if(item.stuId == stuId) {
-      
       return item
     }
   })
@@ -90,7 +88,55 @@ router.post('/seleOne', async ctx => {
   } else {
     ctx.body = { msg: '未找到记录!',status: 404,} 
   }
-  
+})
+
+/*
+*@router GET  api/illness/teacher
+@desc 根据审批人获取请假信息 
+@access  接口是公开的
+*/
+
+router.post('/teacher', async ctx => {
+  const findResult = await Illness.find({boss: ctx.request.body.boss})
+  if(findResult.length > 0) {
+    const status = ctx.request.body.status
+    if(status === 'true') {
+      let trueResule = findResult.filter(item => {
+        if(item.status == 'true') {
+          return item
+        }
+      })
+      ctx.status = 200
+      ctx.body = trueResule
+    } else {
+      let falseResule = findResult.filter(item => {
+        if(item.status == 'false') {
+          return item
+        }
+      })
+      ctx.status = 200
+      ctx.body = falseResule
+    }
+  } else {
+    ctx.body = { msg: '未找到记录!',status: 404,} 
+  }
+})
+
+/*
+*@router GET  api/illness/approve
+@desc 批准假期接口 
+@access  接口是公开的
+*/
+
+router.put('/approve', async ctx => {
+  const findResult = await Illness.find({_id: ctx.request.body._id})
+  findResult[0].status = ctx.request.body.status
+  const profileUpdate = await Illness.findOneAndUpdate(
+    {_id: ctx.request.body._id},
+    {$set: findResult[0]},
+    {new: true}
+  )
+  ctx.body = profileUpdate
 })
 
 

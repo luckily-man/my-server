@@ -78,4 +78,38 @@ router.post('/login', async ctx => {
   }
 })
 
+
+/*
+*@router GET  api/teacher/all
+@desc 教师接口
+@access  接口是公开的
+*/
+router.get('/all', async ctx => {
+  const findResult =  await Teacher.find();
+  if(findResult.length > 0) {
+    ctx.body = {
+      status:200,
+      data: findResult
+    }
+  }else {
+    ctx.body = {
+      status: 404,
+      data: '没有任何数据'
+    }
+  }
+})
+
+
+/*
+*@router GET  api/teacher/current
+@desc 用户信息接口地址 返回用户信息
+@access  接口是私密的
+*/
+
+router.get('/current', passport.authenticate('jwt', { session: false }), async ctx => {
+  ctx.body = {
+    id: ctx.state.user.id,
+    name: ctx.state.user.name,
+  }
+})
 module.exports = router.routes()

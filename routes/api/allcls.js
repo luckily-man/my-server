@@ -305,4 +305,33 @@ router.get('/all', async ctx => {
     }
   }
 })
+
+/*
+*@router POST  api/allcls/select/stu
+@desc 查找是否签到接口
+@access  接口是公开的
+*/
+
+router.post('/select/stu', async ctx => {
+  const findResult = await AllCls.find()
+  let newClsArray = []
+  findResult.forEach(item => {
+    if(item.course.length) {
+      newClsArray.push(...item.course)
+    }
+  });;
+  // console.log(newClsArray)
+  let result = newClsArray.filter(item => {
+    if(item.name == ctx.request.body.name && item.teacher == ctx.request.body.teacher && item.week == ctx.request.body.week) {
+      return item
+    }
+  })
+  
+  if(result[0].students.length) {
+    ctx.body = result[0].students
+  } else {
+    ctx.body = '暂无学生加入班级'
+  }
+})
+
 module.exports = router.routes()

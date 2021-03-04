@@ -2,9 +2,6 @@ const Router = require('koa-router');
 const router = new Router();
 const passport = require('koa-passport')
 const teaclass = require('../../models/TeaClass');
-const teacher = require('./teacher');
-const { setMaxListeners } = require('../../models/TeaClass');
-
 
 /*
 *@router GET  api/teaclass/test
@@ -128,6 +125,22 @@ router.post('/add/mclass',passport.authenticate('jwt', { session: false }), asyn
       }
     })
   }
+})
+
+/*
+*@router POST  api/teaclass/select/all
+@desc 查找所有课程名接口
+@access  接口是私有的
+*/
+router.get('/select/all',passport.authenticate('jwt', { session: false }), async ctx => {
+  const findResult = await teaclass.find({user: ctx.state.user.id})
+  let newArray = []
+  findResult.forEach(item => {
+    if(item.mclass.length) {
+      newArray.push(...item.mclass)
+    }
+  });
+  ctx.body = newArray
 })
 
 
