@@ -194,7 +194,35 @@ router.put('/mdify', passport.authenticate('jwt', { session: false }), async ctx
       status: 404
     }
   }
+})
 
+
+/*
+*@router DELETE  /api/class/del/one
+@desc 删除某一天谋一节课信息接口
+@access  接口是私有的
+*/
+router.delete('/del/one', passport.authenticate('jwt', { session: false }), async ctx => {
+  const profile = await Class.find({user: ctx.state.user.id})
+  const week = ctx.request.body.weeks
+  const newList = profile[0][week]
+  const uuid = ctx.request.body.uuid - 1
+  const newMsg = newList[uuid]
+  newMsg.name = '暂无课程'
+  newMsg.teacher = ''
+  newMsg. classRoom = ''
+  newMsg.begin = '00:00'
+  newMsg.end = '00:00'
+  const profileUpdate = await Class.findOneAndUpdate(
+    {user: ctx.state.user.id},
+    {$set: profile[0]},
+    {new: true}
+  )
+  ctx.body = {
+    status: 200,
+    data:profileUpdate
+  }
+  
 })
 
 module.exports = router.routes()

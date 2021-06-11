@@ -106,16 +106,20 @@ router.post('/teacher', async ctx => {
           return item
         }
       })
-      ctx.status = 200
-      ctx.body = trueResule
+      ctx.body = {
+        status: 200,
+        data:trueResule
+      }
     } else {
       let falseResule = findResult.filter(item => {
         if(item.status == 'false') {
           return item
         }
       })
-      ctx.status = 200
-      ctx.body = falseResule
+      ctx.body = {
+        status: 200,
+        data: falseResule
+      } 
     }
   } else {
     ctx.body = { msg: '未找到记录!',status: 404,} 
@@ -139,5 +143,26 @@ router.put('/approve', async ctx => {
   ctx.body = profileUpdate
 })
 
+/*
+*@router GET  api/illness/delete
+@desc 删除请假接口 delete
+@access  接口是公开的
+*/
+
+router.delete('/delete', async ctx => {
+  const findResult = await Illness.find({_id: ctx.request.body._id})
+  console.log(findResult);
+  const profileUpdate = await Illness.deleteOne(
+    {_id: ctx.request.body._id},
+    // {$set: findResult},
+    // {new: true}
+  )
+  if(profileUpdate.ok === 1) {
+    ctx.body = {
+      status: 200,
+      data: '删除成功'
+    }
+  }
+})
 
 module.exports = router.routes()

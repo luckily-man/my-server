@@ -19,7 +19,6 @@ const validatorEditPwdInput = require('../../validation/editpwd')
 */
 
 router.post('/register', async ctx => {
-  // console.log(ctx.request.body);
   const { errors, isValid } = validatorRegisterInput(ctx.request.body)
   // 判断是否验证通过
   if(!isValid) {
@@ -47,13 +46,10 @@ router.post('/register', async ctx => {
     // 加密
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(newUser.password, salt);
-    // console.log(hash);
     newUser.password = hash
-
     // 存储到数据库
     await newUser.save()
     .then(user => {
-      // console.log(user);
       ctx.body = {
         status: 200,
         user
